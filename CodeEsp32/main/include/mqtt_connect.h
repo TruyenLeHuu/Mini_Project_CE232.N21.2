@@ -11,10 +11,11 @@
 #define MAX_LENGTH_TOPIC 30
 #define MAX_LENGTH_DATA 10
 
-// #define TEMP_TOPIC_PUB 		    "dht/temp"
-// #define HUMIDITY_TOPIC_PUB      "dht/humidity"
-// #define STATUS_TOPIC_PUB        "dht/status"
-#define TOPIC_PUB               "dht/data"
+#define TOPIC_PUB               "Status/Env"
+#define CONNECT_PUB             "Status/Connected"
+#define DISCONNECT_PUB          "Status/Disconnected"
+
+#define KEEPALIVE 50
 
 
 /**
@@ -23,6 +24,8 @@
 #define MQTT_ADDRESS 		"mqtt://mqtt.flespi.io"
 // #define MQTT_ADDRESS 		"192.168.137.154"
 #define MQTT_PORT 		1883
+
+#define SEND_CYCLE 10000
 
 typedef struct MQTT_Handler_Struct{   
     esp_mqtt_client_handle_t client;

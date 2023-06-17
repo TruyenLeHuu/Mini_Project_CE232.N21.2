@@ -37,34 +37,23 @@ void log_error_if_nonzero(const char *message, int error_code)
 
 void pub_data_clk(void* param)
 {
-    // cJSON *root;
-    // root = cJSON_CreateObject();
-    // double temperature;
-    // double humidity;
     while (1)
     {
-        if (DHT11_read().status != DHT11_OK) {
-            cJSON *root;
-            root = cJSON_CreateObject();
+        cJSON *root;
+        root = cJSON_CreateObject();
+        if (DHT11_read().status != DHT11_OK) {    
             cJSON_AddNumberToObject(root, "temperature", -1);
             cJSON_AddNumberToObject(root, "temperature", -1);
             cJSON_AddNumberToObject(root, "error", 1);
-            char *rendered=cJSON_Print(root);
-
-            mqtt_client_publish(mqtt_t, TOPIC_PUB, rendered);
-
         }
         else {
-            cJSON *root;
-            root = cJSON_CreateObject();
             cJSON_AddNumberToObject(root, "temperature", DHT11_read().temperature);
             cJSON_AddNumberToObject(root, "temperature", DHT11_read().humidity);
             cJSON_AddNumberToObject(root, "error", 0);
-            char *rendered=cJSON_Print(root);
-
-            mqtt_client_publish(mqtt_t, TOPIC_PUB, rendered);
         }
-        vTaskDelay(5*1000/portTICK_PERIOD_MS);
+        char *rendered=cJSON_Print(root);  
+        mqtt_client_publish(mqtt_t, TOPIC_PUB, rendered);
+        vTaskDelay(SEND_CYCLE/portTICK_PERIOD_MS);
     }
 }
 
@@ -72,13 +61,14 @@ void pub_data_clk(void* param)
 void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
 {
     mqtt_t = (MQTT_Handler_Struct *)handler_args;
-    ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%ld", base, event_id);
+    ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
     esp_mqtt_event_handle_t event = event_data;
     // esp_mqtt_client_handle_t client = event->client;
     switch ((esp_mqtt_event_id_t)event_id)
     {
     case MQTT_EVENT_CONNECTED:
         xTaskCreate(&pub_data_clk, "DHT_task", 8192, NULL, 5, NULL);
+        mqtt_client_publish(mqtt_t, CONNECT_PUB, "Esp32");
         break;
     case MQTT_EVENT_DISCONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
