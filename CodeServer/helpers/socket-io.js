@@ -1,5 +1,5 @@
 const environment = require('../model/environment');
-module.exports = function (io, mqtt) {
+module.exports = function (io) {
     io.on("connection", function (socket) {
         console.log("Socket connected")
         socket.on("disconnect",()=>{

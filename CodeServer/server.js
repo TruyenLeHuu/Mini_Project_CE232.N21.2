@@ -25,7 +25,7 @@ var server = require("http").Server(appExpress);
 var io = require("socket.io")(server);
 
 //Import routes
-const route = require('./routes/route')(io);
+const route = require('./routes/route')();
 
 //Route middleware
 appExpress.use('/', route);
@@ -33,7 +33,7 @@ appExpress.use('/', route);
 // Import mqtt for server
 const mqtt = require('./helpers/mqtt')(io);
 // Import socket io for server
-require('./helpers/socket-io')(io, mqtt);
+require('./helpers/socket-io')(io);
 // Start and connect mongoDB and server
 mongoose
 .connect(URI, {useNewUrlParser:true, useUnifiedTopology:true})

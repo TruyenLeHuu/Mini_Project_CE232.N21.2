@@ -3,15 +3,26 @@ $.when(
       Socket_hostIP = hostIP;
       Socket_port = port;
   })).done(function(){
+  socket = io.connect('http://' + Socket_hostIP + ':' + Socket_port, { transports : ['websocket'] });
   var temperatureData = [25, 26, 27, 28, 29, 25, 26, 50, 28, 29, 25, 26, 27, 28, 29, 25, 26, 27, 28, 29, 25, 26, 27, 28, 29, 25, 26, 27, 28, 29 ]; 
   var humidityData = [60, 62, 64, 65, 63, 60, 62, 64, 65, 63, 60, 62, 64, 65, 63, 60, 62, 64, 65, 63, 60, 62, 64, 65, 63, 60, 62, 64, 65, 63 ]; 
   
   const temperatureCanvas = document.getElementById('temperatureChart');
   const humidityCanvas = document.getElementById('humidityChart');
+  const connect_status = document.getElementById('status-esp');
   const ctx1 = temperatureCanvas.getContext('2d');
   const ctx2 = humidityCanvas.getContext('2d');
-  socket = io.connect('http://' + Socket_hostIP + ':' + Socket_port, { transports : ['websocket'] });
   socket.emit('Get-data');
+  socket.on('Esp-connected', ()=>{
+    $("#status-esp").removeClass("status-disconnected");
+    $("#status-esp").addClass("status-connected");
+    connect_status.innerText = "Status: Connected"
+  })
+  socket.on('Esp-disconnected', ()=>{
+    $("#status-esp").addClass("status-disconnected");
+    $("#status-esp").removeClass("status-connecxted");
+    connect_status.innerText = "Status: Disconnected"
+  })
   socket.on('Environment-update', ()=>{socket.emit('Get-data');})
   socket.on('Send-data', (data)=>{
     console.info(data)

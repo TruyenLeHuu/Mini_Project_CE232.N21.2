@@ -16,6 +16,8 @@
 
 #include "dht11.h"
 
+#include "oled.h"
+
 
 static const char *TAG = "mqtt connection";
 
@@ -37,20 +39,30 @@ void log_error_if_nonzero(const char *message, int error_code)
 
 void pub_data_clk(void* param)
 {
+    double temperature;
+    double humidity;
+    char str[50];
     while (1)
     {
+        temperature  = DHT11_read().temperature;
+        humidity = DHT11_read().humidity;
         cJSON *root;
         root = cJSON_CreateObject();
         if (DHT11_read().status != DHT11_OK) {    
             cJSON_AddNumberToObject(root, "temperature", -1);
-            cJSON_AddNumberToObject(root, "temperature", -1);
+            cJSON_AddNumberToObject(root, "hump", -1);
             cJSON_AddNumberToObject(root, "error", 1);
         }
         else {
-            cJSON_AddNumberToObject(root, "temperature", DHT11_read().temperature);
-            cJSON_AddNumberToObject(root, "temperature", DHT11_read().humidity);
+            cJSON_AddNumberToObject(root, "temperature", temperature);
+            cJSON_AddNumberToObject(root, "hump", humidity);
             cJSON_AddNumberToObject(root, "error", 0);
         }
+
+        sprintf(str, "Temp: %.1lf\nHum: %.1lf", temperature, humidity);
+        task_ssd1306_display_clear();
+        task_ssd1306_display_text(str);
+
         char *rendered=cJSON_Print(root);  
         mqtt_client_publish(mqtt_t, TOPIC_PUB, rendered);
         vTaskDelay(SEND_CYCLE/portTICK_PERIOD_MS);

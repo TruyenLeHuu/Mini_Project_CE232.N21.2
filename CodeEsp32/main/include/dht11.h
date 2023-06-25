@@ -5,7 +5,7 @@
 
 #include "driver/gpio.h"
 
-#define DHT_GPIO GPIO_NUM_22
+#define DHT_GPIO GPIO_NUM_25
 
 enum dht11_status {
     DHT11_CRC_ERROR = -2,
@@ -15,8 +15,8 @@ enum dht11_status {
 
 struct dht11_reading {
     int status;
-    char temperature;
-    char humidity;
+    double temperature;
+    double humidity;
 };
 
 void DHT11_init(gpio_num_t);

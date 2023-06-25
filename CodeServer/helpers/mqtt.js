@@ -18,7 +18,7 @@ module.exports = function (io) {
         switch (topic) {
             case 'Status/Connected':
                 console.log("Connected: " + message.toString());
-                // io.sockets.emit('Esp-connect', message.toString());
+                io.sockets.emit('Esp-connected', message.toString());
                 break;
             case 'Status/Disconnected':
                 let date_ob = new Date();
@@ -36,11 +36,13 @@ module.exports = function (io) {
                 // current seconds
                 let seconds = date_ob.getSeconds();
                 console.log("Disconnect: "+ message.toString() + " "+ year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds);
-                // io.sockets.emit('Hardware-disconnect', message.toString());
+                io.sockets.emit('Esp-disconnected', message.toString());
                 break;
             case 'Status/Env':
                 console.log("Environment: " + message.toString());
-                addData(JSON.parse(message.toString()));
+                data = JSON.parse(message.toString());
+                if (data.error == 0)
+                addData(data);
                 io.sockets.emit('Environment-update', message.toString());
                 break;
         }

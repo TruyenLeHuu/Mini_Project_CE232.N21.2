@@ -3,7 +3,7 @@ const {
   mainPage,
 } = require("../controllers/controller");
 
-module.exports = function (io) {
+module.exports = function () {
   router.get("/", mainPage);
   return router;
 };

@@ -72,3 +72,15 @@ canvas {
   max-width: 700;
   max-height: auto;
 }
+
+.status-esp {
+  font-size: 18px;
+}
+
+.status-disconnected {
+  color: rgb(226, 60, 60);
+}
+
+.status-connected {
+  color: rgb(71, 255, 47);
+}
